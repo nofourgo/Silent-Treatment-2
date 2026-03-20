@@ -1,5 +1,6 @@
 // 1. Dữ liệu hạt giống (Đã thêm trường image)
-let seeds = [
+// Lấy dữ liệu từ localStorage nếu có, nếu không dùng dữ liệu mặc định
+let seeds = JSON.parse(localStorage.getItem("seeds")) || [
   {
     id: 1,
     name: "Bí đỏ",
@@ -101,6 +102,11 @@ let seeds = [
   },
 ];
 
+// Lưu dữ liệu vào localStorage nếu chưa có
+if (!localStorage.getItem("seeds")) {
+  localStorage.setItem("seeds", JSON.stringify(seeds));
+}
+
 let cart = [];
 
 // 2. Hiển thị danh sách hạt giống
@@ -121,11 +127,15 @@ function renderProducts() {
                     <h3 class="text-lg font-bold text-gray-800">${seed.name}</h3>
                     <span class="text-xs text-gray-400 italic">${seed.supplier}</span>
                 </div>
-                <p class="text-sm text-gray-500 mb-4 font-medium">${seed.type}</p>
+                <p class="text-sm text-gray-500 mb-2 font-medium">${seed.type}</p>
+                <div class="text-xs text-gray-500 mb-4">
+                    Kho: <span class="font-bold ${seed.quantity === 0 ? 'text-red-600' : seed.quantity < 10 ? 'text-orange-600' : 'text-green-600'}">${seed.quantity}</span> sản phẩm
+                </div>
                 <div class="flex justify-between items-center">
                     <span class="text-xl font-bold text-green-600">${seed.sellingPrice.toLocaleString()}đ</span>
                     <button onclick="addToCart(${seed.id})" 
-                        class="bg-gray-900 text-white p-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-semibold">
+                        class="bg-gray-900 text-white p-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-semibold ${seed.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                        ${seed.quantity === 0 ? 'disabled' : ''}>
                         Thêm vào giỏ
                     </button>
                 </div>
@@ -248,3 +258,5 @@ window.checkout = function () {
 
 // Khởi chạy khi trang load xong
 document.addEventListener("DOMContentLoaded", renderProducts);
+
+// Nhập hàng mới , cập nhật kho, dùng form đơn giản

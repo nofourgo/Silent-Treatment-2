@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Green Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .fade-enter {
+        animation: fadeIn 0.3s ease-in;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-enter">
+        <div class="text-center mb-8">
+          <h1 class="text-4xl font-bold text-green-600 mb-2">🌱 Green Garden</h1>
+          <p class="text-gray-600">Quản lý hạt giống</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Tên đăng nhập</label>
+            <input
+              id="username-input"
+              type="text"
+              placeholder="admin"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu</label>
+            <input
+              id="password-input"
+              type="password"
+              placeholder="admin123"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              required
+            />
+          </div>
+
+          <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm"></div>
+
+          <button
+            type="submit"
+            class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md"
+          >
+            ĐĂNG NHẬP
+          </button>
+        </form>
+
+        <p class="text-center text-xs text-gray-500 mt-6">
+          Tài khoản mặc định: <strong>admin</strong> / <strong>admin123</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-screen" class="hidden min-h-screen bg-gray-50">
+      <header class="bg-green-600 text-white p-4 shadow-lg sticky top-0 z-10">
+        <div class="container mx-auto flex justify-between items-center">
+          <h1 class="text-2xl font-bold italic">🌱 Green Garden - Admin</h1>
+          <button
+            onclick="handleLogout()"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+          >
+            ĐĂNG XUẤT
+          </button>
+        </div>
+      </header>
+
+      <main class="container mx-auto p-6">
+        <!-- Tabs -->
+        <div class="flex gap-4 mb-6">
+          <button
+            onclick="switchTab('add-seed')"
+            id="tab-add-seed"
+            class="px-6 py-2 font-semibold rounded-lg bg-green-600 text-white transition"
+          >
+            ➕ Thêm Hạt Giống
+          </button>
+          <button
+            onclick="switchTab('update-stock')"
+            id="tab-update-stock"
+            class="px-6 py-2 font-semibold rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400 transition"
+          >
+            📦 Cập Nhật Kho
+          </button>
+        </div>
+
+        <!-- Tab: Thêm Hạt Giống -->
+        <div id="add-seed-tab" class="bg-white rounded-2xl shadow-md p-8 fade-enter">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">Thêm Hạt Giống Mới</h2>
+
+          <form onsubmit="handleAddSeed(event)" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Tên hạt giống *</label>
+                <input
+                  id="seed-name"
+                  type="text"
+                  placeholder="VD: Cà chua"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Loại hạt *</label>
+                <select
+                  id="seed-type"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                >
+                  <option value="">Chọn loại</option>
+                  <option value="Hàng năm">Hàng năm</option>
+                  <option value="2 năm">2 năm</option>
+                  <option value="Lưu niên">Lưu niên</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Mùa *</label>
+                <select
+                  id="seed-season"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                >
+                  <option value="">Chọn mùa</option>
+                  <option value="Xuân">Xuân</option>
+                  <option value="Hạ">Hạ</option>
+                  <option value="Thu">Thu</option>
+                  <option value="Đông">Đông</option>
+                  <option value="Hè">Hè</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nhà cung cấp *</label>
+                <input
+                  id="seed-supplier"
+                  type="text"
+                  placeholder="VD: GreenFarm"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Giá nhập *</label>
+                <input
+                  id="seed-import-price"
+                  type="number"
+                  placeholder="VD: 500"
+                  min="0"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Giá bán *</label>
+                <input
+                  id="seed-selling-price"
+                  type="number"
+                  placeholder="VD: 10000"
+                  min="0"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Số lượng *</label>
+                <input
+                  id="seed-quantity"
+                  type="number"
+                  placeholder="VD: 50"
+                  min="0"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Link ảnh</label>
+                <input
+                  id="seed-image"
+                  type="text"
+                  placeholder="VD: ./images/cachua.jpg"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+            </div>
+
+            <div class="bg-green-50 border border-green-200 p-4 rounded-lg text-sm text-green-700">
+              ℹ️ Tất cả ô đánh dấu * là bắt buộc
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md"
+            >
+              ✅ THÊM HẠT GIỐNG
+            </button>
+          </form>
+
+          <div id="success-message" class="hidden mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg"></div>
+        </div>
+
+        <!-- Tab: Cập Nhật Kho -->
+        <div id="update-stock-tab" class="hidden bg-white rounded-2xl shadow-md p-8 fade-enter">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">Cập Nhật Số Lượng Kho</h2>
+
+          <div id="stock-list" class="space-y-4">
+            <!-- Được điền bằng JavaScript -->
+          </div>
+
+          <button
+            onclick="saveStockChanges()"
+            class="w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md"
+          >
+            💾 LƯU THAY ĐỔI
+          </button>
+
+          <div id="stock-success-message" class="hidden mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
