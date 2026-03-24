@@ -1,4 +1,6 @@
-let toilets = [
+let toilets = localStorage.getItem(
+  JSON.parse(localStorage.getItem(`toilets`)),
+) || [
   {
     id: 1,
     name: "Nhà vệ sinh Hồ Gươm",
@@ -267,31 +269,114 @@ let addToilet = () => {
   let openingHours = document.getElementById(`input-openHour`).value;
   let cleanliness = document.getElementById(`input-cleanliness`).value || 0;
   let imageUrl = document.getElementById(`input-image`).files[0].name;
-  let description = document.getElementById(`input-description`);
+  let description = document.getElementById(`input-description`).value;
+  let toiletPaperRolls = +document.getElementById(`input-toiletPaperRolls`)
+    .value;
 
-  let newToilet = {
+  let toilet = {
     id: newId(toilets),
     name,
     address,
     priceUrination,
     priceDefecation,
+    toiletPaperRolls,
     status,
     openingHours,
     cleanliness,
     imageUrl,
     description,
   };
-  toilets.push(newToilet);
+  toilets.unshift(toilet);
+  console.log(toilets);
+  localStorage.setItem("toilets", JSON.stringify(toilets));
+
   alert(`Thêm thành công`);
-  document.getElementById(`input-name`).innerHTML = "";
-  document.getElementById(`input-address`).innerHTML = "";
-  document.getElementById(`input-urination`).innerHTML = "";
-  document.getElementById(`input-defecation`).innerHTML = "";
-  document.getElementById(`input-status`).innerHTML = "";
-  document.getElementById(`input-openHour`).innerHTML = "";
-  document.getElementById(`input-cleanliness`).innerHTML = "";
+  document.getElementById(`input-name`).value = "";
+  document.getElementById(`input-address`).value = "";
+  document.getElementById(`input-urination`).value = "";
+  document.getElementById(`input-defecation`).value = "";
+  document.getElementById(`input-status`).value = "Hoạt động";
+  document.getElementById(`input-openHour`).value = "";
+  document.getElementById(`input-cleanliness`).value = "";
   document.getElementById(`input-image`).value = "";
   document.getElementById(`input-description`).value = "";
+  let toiletUI = document.getElementById(`toilets-list`);
+  let toiletHTML = document.createElement("div");
+  toiletHTML.innerHTML = `<div
+          class="bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden relative" id="toilet-${toilet.id}"
+        >
+              ${
+                toilet.status === "Hoạt động"
+                  ? `<span class="bg-green-100 text-green-600 px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Hoạt động
+              </span>`
+                  : ""
+              }
+              ${
+                toilet.status === "Đang sửa"
+                  ? `<span class="bg-yellow-100 text-orange-600 px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Đang sửa
+              </span>`
+                  : ""
+              }
+              ${
+                toilet.status === "Đang vệ sinh"
+                  ? `<span class="bg-[red] text-white px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Đang vệ sinh
+              </span>`
+                  : ""
+              }
+          <img src="./images/${toilet.imageUrl}" class="w-full h-48 object-cover" />
+              
+          <div class="p-5">
+            <div class="flex justify-between mb-3">
+              <h3 class="font-bold text-lg">${toilet.name}</h3>
+            </div>
+              
+            <p class="text-gray-500 text-sm mb-3">${toilet.address}</p>
+
+            <div class="text-sm space-y-1">
+              <p>
+                💦 Đi nhẹ:
+                <b>${toilet.priceUrination.toLocaleString()} VNĐ</b>
+              </p>
+
+              <p>
+                💩 Đi nặng:
+                <b>${toilet.priceDefecation.toLocaleString()} VNĐ</b>
+              </p>
+
+              <p>
+                🧻 Giấy:
+                ${toilet.toiletPaperRolls > 0 ? `<b class="${toilet.toiletPaperRolls >= 3 ? "text-[green]" : "text-[red]"}">${toilet.toiletPaperRolls} Cuộn </b>` : `Hết`}
+              </p>
+
+              <p>
+                ⭐ Sạch:
+                <b>8/10</b>
+              </p>
+
+              <p>🕐 24/7</p>
+            </div>
+
+            <p class="text-gray-600 text-sm mt-3">${toilet.description}</p>
+
+            <div class="flex gap-2 mt-5">
+              <button
+                class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${toilets.length - 1})'
+              >
+                ✏️ Sửa
+              </button>
+
+              <button
+                class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded"
+              >
+                🗑 Xóa
+              </button>
+            </div>
+          </div>
+        </div>`;
+  toiletUI.appendChild(toiletHTML);
 };
 
 btnSave.addEventListener(`click`, addToilet);
