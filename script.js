@@ -236,7 +236,7 @@ let render = (toilets) => {
               <p>🕐 24/7</p>
             </div>
 
-            <p class="text-gray-600 text-sm mt-3">Có máy rửa tay tự động</p>
+            <p class="text-gray-600 text-sm mt-3">${toilet.description}</p>
 
             <div class="flex gap-2 mt-5">
               <button
