@@ -1,6 +1,5 @@
-let toilets = localStorage.getItem(
-  JSON.parse(localStorage.getItem(`toilets`)),
-) || [
+let toilets = 
+  JSON.parse(localStorage.getItem(`toilets`)) || [
   {
     id: 1,
     name: "Nhà vệ sinh Hồ Gươm",
