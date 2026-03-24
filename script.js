@@ -1,9 +1,8 @@
-const toilets = [
+let toilets = [
   {
     id: 1,
     name: "Nhà vệ sinh Hồ Gươm",
     address: "Phố Lê Thái Tổ, Hoàn Kiếm, Hà Nội",
-    district: "Hoàn Kiếm",
     priceUrination: 3000,
     priceDefecation: 5000,
     status: "Hoạt động",
@@ -18,10 +17,9 @@ const toilets = [
     id: 2,
     name: "Nhà vệ sinh Công viên Thống Nhất",
     address: "Trần Nhân Tông, Hai Bà Trưng, Hà Nội",
-    district: "Hai Bà Trưng",
     priceUrination: 2000,
     priceDefecation: 4000,
-    status: "Hoạt động",
+    status: "Đang sửa",
     openingHours: "05:00 - 22:00",
     cleanliness: 3,
     toiletPaperRolls: 3,
@@ -33,10 +31,9 @@ const toilets = [
     id: 3,
     name: "Nhà vệ sinh Bến xe Mỹ Đình",
     address: "20 Phạm Hùng, Nam Từ Liêm, Hà Nội",
-    district: "Nam Từ Liêm",
     priceUrination: 3000,
     priceDefecation: 6000,
-    status: "Hoạt động",
+    status: "Đang v",
     openingHours: "24/7",
     cleanliness: 3,
     toiletPaperRolls: 1,
@@ -45,25 +42,22 @@ const toilets = [
     imageUrl: "toilet_03.jpg",
   },
   {
-    id: 4,
     name: "Nhà vệ sinh Công viên Cầu Giấy",
-    address: "Duy Tân, Cầu Giấy, Hà Nội",
-    district: "Cầu Giấy",
+    address: "165 Cầu Giấy",
     priceUrination: 2000,
     priceDefecation: 5000,
-    status: "Đang vệ sinh",
+    cleanliness: "4",
+    toiletPaperRolls: "6",
+    status: "Hoạt động",
     openingHours: "05:00 - 21:30",
-    cleanliness: 4,
-    toiletPaperRolls: 6,
-    hasHandWash: true,
     description: "Nhà vệ sinh mới, khá sạch",
     imageUrl: "toilet_04.jpg",
+    id: 4,
   },
   {
     id: 5,
     name: "Nhà vệ sinh Chợ Đồng Xuân",
     address: "Đồng Xuân, Hoàn Kiếm, Hà Nội",
-    district: "Hoàn Kiếm",
     priceUrination: 3000,
     priceDefecation: 5000,
     status: "Hoạt động",
@@ -78,7 +72,6 @@ const toilets = [
     id: 6,
     name: "Nhà vệ sinh Royal City",
     address: "72 Nguyễn Trãi, Thanh Xuân, Hà Nội",
-    district: "Thanh Xuân",
     priceUrination: 0,
     priceDefecation: 0,
     status: "Hoạt động",
@@ -93,7 +86,6 @@ const toilets = [
     id: 7,
     name: "Nhà vệ sinh Công viên Hòa Bình",
     address: "Phạm Văn Đồng, Bắc Từ Liêm, Hà Nội",
-    district: "Bắc Từ Liêm",
     priceUrination: 2000,
     priceDefecation: 4000,
     status: "Hoạt động",
@@ -108,7 +100,6 @@ const toilets = [
     id: 8,
     name: "Nhà vệ sinh Ga Hà Nội",
     address: "120 Lê Duẩn, Đống Đa, Hà Nội",
-    district: "Đống Đa",
     priceUrination: 3000,
     priceDefecation: 5000,
     status: "Hoạt động",
@@ -120,25 +111,22 @@ const toilets = [
     imageUrl: "toilet_08.jpg",
   },
   {
-    id: 9,
     name: "Nhà vệ sinh AEON Mall Long Biên",
-    address: "27 Cổ Linh, Long Biên, Hà Nội",
-    district: "Long Biên",
+    address: "199 Nguyễn Văn Linh, Long Biên, Hà Nội",
     priceUrination: 0,
     priceDefecation: 0,
+    cleanliness: "5",
+    toiletPaperRolls: "0",
     status: "Hoạt động",
-    openingHours: "09:00 - 22:00",
-    cleanliness: 5,
-    toiletPaperRolls: 10,
-    hasHandWash: true,
-    description: "Miễn phí, hiện đại, rất sạch",
+    openingHours: "19:00 - 22:30",
+    description: "Chú ý không có giấy, chỉ có tăm nước",
     imageUrl: "toilet_09.jpg",
+    id: 9,
   },
   {
     id: 10,
     name: "Nhà vệ sinh Công viên Yên Sở",
     address: "Quốc lộ 1A, Hoàng Mai, Hà Nội",
-    district: "Hoàng Mai",
     priceUrination: 2000,
     priceDefecation: 4000,
     status: "Hoạt động",
@@ -150,240 +138,160 @@ const toilets = [
     imageUrl: "toilet_10.png",
   },
 ];
-
-let selectedId = null;
-
-function statusBadge(status) {
-  if (status === "Hoạt động") {
-    return `
-<span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-sm">
-Hoạt động
-</span>
-`;
+console.log(toilets);
+let newId = (toilets) => {
+  if (toilets.length === 0) {
+    return 1;
+  } else {
+    let max = toilets[0].id;
+    toilets.forEach((t) => {
+      if (t.id > max) {
+        max = t.id;
+      }
+    });
+    return max + 1;
   }
-
-  return `
-<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg text-sm">
-Đang vệ sinh
-</span>
-`;
-}
-
-function paperBadge(num) {
-  if (num == 0) {
-    return `
-<span class="text-red-500 font-semibold">
-Hết
-</span>
-`;
+};
+let flag = true;
+// Mở modal khi click
+let openModal = (flag, index) => {
+  document.getElementById("modal").style.display = "block";
+  if (flag) {
+    document.getElementById(`lbl-title`).innerHTML = `➕ Thêm nhà vệ sinh`;
+  } else {
+    document.getElementById(`lbl-title`).innerHTML =
+      `😶‍🌫️ Sửa thông tin ${toilets[index].name}`;
   }
+};
+let btnOpenModalAdd = document.getElementById(`btn-add`);
 
-  if (num < 2) {
-    return `
-<span class="text-yellow-500 font-semibold">
-Sắp hết (${num})
-</span>
-`;
-  }
+btnOpenModalAdd.addEventListener("click", () => openModal(true));
+let closeModal = () => {
+  document.getElementById("modal").style.display = "none";
+};
+let btnCloseModal = document.getElementById(`btn-close-modal`);
+let btnCancel = document.getElementById(`btn-cancel`);
+btnCloseModal.addEventListener("click", closeModal);
+btnCancel.addEventListener("click", closeModal);
 
-  return `
-<span>
-${num}
-</span>
-`;
-}
+let render = (toilets) => {
+  let toiletUI = document.getElementById(`toilets-list`);
+  // console.log(toiletUI);
+  toilets.forEach((toilet, index) => {
+    let toiletHTML = document.createElement("div");
+    toiletHTML.innerHTML = `<div
+          class="bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden relative" id="toilet-${toilet.id}"
+        >
+              ${
+                toilet.status === "Hoạt động"
+                  ? `<span class="bg-green-100 text-green-600 px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Hoạt động
+              </span>`
+                  : ""
+              }
+              ${
+                toilet.status === "Đang sửa"
+                  ? `<span class="bg-yellow-100 text-orange-600 px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Đang sửa
+              </span>`
+                  : ""
+              }
+              ${
+                toilet.status === "Đang vệ sinh"
+                  ? `<span class="bg-[red] text-white px-3 py-1 rounded text-sm absolute right-1 top-1">
+                Đang vệ sinh
+              </span>`
+                  : ""
+              }
+          <img src="./images/${toilet.imageUrl}" class="w-full h-48 object-cover" />
+              
+          <div class="p-5">
+            <div class="flex justify-between mb-3">
+              <h3 class="font-bold text-lg">${toilet.name}</h3>
+            </div>
+              
+            <p class="text-gray-500 text-sm mb-3">${toilet.address}</p>
 
-function render(data = toilets) {
-  let html = "";
+            <div class="text-sm space-y-1">
+              <p>
+                💦 Đi nhẹ:
+                <b>${toilet.priceUrination.toLocaleString()} VNĐ</b>
+              </p>
 
-  data.forEach((t) => {
-    html += `
+              <p>
+                💩 Đi nặng:
+                <b>${toilet.priceDefecation.toLocaleString()} VNĐ</b>
+              </p>
 
-<div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden">
+              <p>
+                🧻 Giấy:
+                ${toilet.toiletPaperRolls > 0 ? `<b class="${toilet.toiletPaperRolls >= 3 ? "text-[green]" : "text-[red]"}">${toilet.toiletPaperRolls} Cuộn </b>` : `Hết`}
+              </p>
 
-<img 
-src="images/${t.imageUrl}" 
-class="w-full h-40 object-cover"
-onerror="this.src='images/default.jpg'"
->
+              <p>
+                ⭐ Sạch:
+                <b>8/10</b>
+              </p>
 
-<div class="p-5">
+              <p>🕐 24/7</p>
+            </div>
 
-<div class="flex justify-between items-start mb-3">
+            <p class="text-gray-600 text-sm mt-3">Có máy rửa tay tự động</p>
 
-<h3 class="font-semibold text-lg">
-${t.name}
-</h3>
+            <div class="flex gap-2 mt-5">
+              <button
+                class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${index})'
+              >
+                ✏️ Sửa
+              </button>
 
-${statusBadge(t.status)}
-
-</div>
-
-<p class="text-slate-500 text-sm mb-2">
-📍 ${t.district}
-</p>
-
-<p class="text-sm mb-2">
-🚽 ${t.priceUrination} |
-💩 ${t.priceDefecation}
-</p>
-
-<p class="text-sm mb-2">
-⭐ ${t.cleanliness}
-</p>
-
-<p class="text-sm mb-3">
-🧻 ${paperBadge(t.toiletPaperRolls)}
-</p>
-
-<p class="text-xs text-slate-500 mb-4">
-${t.description}
-</p>
-
-<div class="flex gap-2">
-
-<button onclick="selectToilet(${t.id})"
-class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 py-1.5 rounded-lg text-sm font-medium">
-
-✏️ Edit
-
-</button>
-
-<button onclick="deleteToilet(${t.id})"
-class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-1.5 rounded-lg text-sm font-medium">
-
-🗑 Delete
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-`;
+              <button
+                class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded"
+              >
+                🗑 Xóa
+              </button>
+            </div>
+          </div>
+        </div>`;
+    toiletUI.appendChild(toiletHTML);
   });
+};
+render(toilets);
+let btnSave = document.getElementById(`btn-save`);
+let addToilet = () => {
+  let name = document.getElementById(`input-name`).value;
+  let address = document.getElementById(`input-address`).value;
+  let priceUrination = +document.getElementById(`input-urination`).value;
+  let priceDefecation = +document.getElementById(`input-defecation`).value;
+  let status = document.getElementById(`input-status`).value;
+  let openingHours = document.getElementById(`input-openHour`).value;
+  let cleanliness = document.getElementById(`input-cleanliness`).value || 0;
+  let imageUrl = document.getElementById(`input-image`).files[0].name;
+  let description = document.getElementById(`input-description`);
 
-  document.getElementById("cardContainer").innerHTML = html;
-}
-
-function addToilet() {
-  // Nếu đang sửa toilet, gọi updateToilet thay vì thêm mới
-  if (selectedId !== null) {
-    updateToilet();
-    return;
-  }
-
-  let toilet = {
-    id: Date.now(),
-
-    name: toiletName.value,
-
-    address: "Chưa cập nhật",
-
-    district: district.value,
-
-    priceUrination: priceUrination.value,
-
-    priceDefecation: priceDefecation.value,
-
-    cleanliness: cleanliness.value,
-
-    toiletPaperRolls: paper.value,
-
-    status: status.value,
-
-    openingHours: openingHours.value,
-
-    description: description.value,
-
-    imageUrl: image.value,
-
-    hasHandWash: true,
+  let newToilet = {
+    id: newId(toilets),
+    name,
+    address,
+    priceUrination,
+    priceDefecation,
+    status,
+    openingHours,
+    cleanliness,
+    imageUrl,
+    description,
   };
+  toilets.push(newToilet);
+  alert(`Thêm thành công`);
+  document.getElementById(`input-name`).innerHTML = "";
+  document.getElementById(`input-address`).innerHTML = "";
+  document.getElementById(`input-urination`).innerHTML = "";
+  document.getElementById(`input-defecation`).innerHTML = "";
+  document.getElementById(`input-status`).innerHTML = "";
+  document.getElementById(`input-openHour`).innerHTML = "";
+  document.getElementById(`input-cleanliness`).innerHTML = "";
+  document.getElementById(`input-image`).value = "";
+  document.getElementById(`input-description`).value = "";
+};
 
-  toilets.push(toilet);
-
-  render();
-
-  clearForm();
-}
-
-function deleteToilet(id) {
-  toilets = toilets.filter((t) => t.id !== id);
-
-  render();
-}
-
-function selectToilet(id) {
-  let t = toilets.find((t) => t.id === id);
-
-  selectedId = id;
-
-  toiletName.value = t.name;
-
-  district.value = t.district;
-
-  priceUrination.value = t.priceUrination;
-
-  priceDefecation.value = t.priceDefecation;
-
-  cleanliness.value = t.cleanliness;
-
-  paper.value = t.toiletPaperRolls;
-
-  status.value = t.status;
-
-  openingHours.value = t.openingHours;
-
-  description.value = t.description;
-
-  image.value = t.imageUrl;
-}
-
-function updateToilet() {
-  let t = toilets.find((t) => t.id === selectedId);
-
-  if (!t) return;
-
-  t.name = toiletName.value;
-
-  t.district = district.value;
-
-  t.priceUrination = priceUrination.value;
-
-  t.priceDefecation = priceDefecation.value;
-
-  t.cleanliness = cleanliness.value;
-
-  t.toiletPaperRolls = paper.value;
-
-  t.status = status.value;
-
-  t.openingHours = openingHours.value;
-
-  t.description = description.value;
-
-  t.imageUrl = image.value;
-
-  render();
-
-  clearForm();
-}
-
-function searchToilet() {
-  let keyword = search.value.toLowerCase();
-
-  let filtered = toilets.filter((t) => t.name.toLowerCase().includes(keyword));
-
-  render(filtered);
-}
-
-function clearForm() {
-  document.querySelectorAll("input, textarea").forEach((el) => (el.value = ""));
-
-  selectedId = null;
-}
-
-render();
+btnSave.addEventListener(`click`, addToilet);
