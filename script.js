@@ -1,3 +1,119 @@
+// ==================== AUTHENTICATION ====================
+// Global authentication state
+let isLoggedIn = false;
+let currentUser = null;
+
+// Check if user is logged in
+document.addEventListener('DOMContentLoaded', () => {
+  const storedUser = localStorage.getItem('currentUser');
+  
+  if (storedUser) {
+    isLoggedIn = true;
+    currentUser = storedUser;
+  } else {
+    isLoggedIn = false;
+    currentUser = null;
+  }
+
+  // Update header and buttons based on login status
+  updateAuthUI();
+  
+  // Re-render cards with correct permission status
+  // Clear existing items first
+  const toiletUI = document.getElementById('toilets-list');
+  if (toiletUI) {
+    toiletUI.innerHTML = '';
+  }
+  // Render with current login status
+  render(toilets);
+  
+  // Setup auth button
+  const authBtn = document.getElementById('btn-auth');
+  if (authBtn) {
+    authBtn.addEventListener('click', () => {
+      if (isLoggedIn) {
+        // Logout
+        const confirmLogout = confirm(`Bạn chắc chắn muốn đăng xuất (${currentUser})?`);
+        if (confirmLogout) {
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('userData');
+          sessionStorage.removeItem('loggedIn');
+          
+          isLoggedIn = false;
+          currentUser = null;
+          updateAuthUI();
+          alert('Đã đăng xuất thành công');
+          location.reload();
+        }
+      } else {
+        // Login
+        window.location.href = 'login.html';
+      }
+    });
+  }
+});
+
+/**
+ * Update UI elements based on authentication state
+ */
+function updateAuthUI() {
+  const userIcon = document.getElementById('userIcon');
+  const userStatus = document.getElementById('userStatus');
+  const currentUsername = document.getElementById('currentUsername');
+  const btnAdd = document.getElementById('btn-add');
+  const btnAuth = document.getElementById('btn-auth');
+
+  if (isLoggedIn) {
+    // User is logged in
+    userIcon.textContent = '✅';
+    userStatus.textContent = 'Đã đăng nhập';
+    currentUsername.textContent = currentUser;
+    
+    // Enable add button
+    if (btnAdd) {
+      btnAdd.disabled = false;
+      btnAdd.title = 'Thêm nhà vệ sinh mới';
+    }
+
+    // Change button to logout
+    if (btnAuth) {
+      btnAuth.textContent = '🚪 Đăng xuất';
+      btnAuth.className = 'bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg shadow transition';
+    }
+  } else {
+    // User is guest
+    userIcon.textContent = '👤';
+    userStatus.textContent = 'Khách';
+    currentUsername.textContent = 'Khách';
+    
+    // Disable add button
+    if (btnAdd) {
+      btnAdd.disabled = true;
+      btnAdd.title = 'Cần đăng nhập để thêm nhà vệ sinh';
+    }
+
+    // Change button to login
+    if (btnAuth) {
+      btnAuth.textContent = '🔑 Đăng nhập';
+      btnAuth.className = 'bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg shadow transition';
+    }
+  }
+}
+
+/**
+ * Check if user has permission to perform action
+ * @returns {boolean} True if user is logged in
+ */
+function checkPermission(actionName) {
+  if (!isLoggedIn) {
+    alert(`⚠️ Bạn cần đăng nhập để ${actionName}\n\nVui lòng nhấn nút "Đăng nhập" ở trên cùng bên phải.`);
+    return false;
+  }
+  return true;
+}
+
+// ==================== TOILET MANAGEMENT ====================
+
 let toilets = 
   JSON.parse(localStorage.getItem(`toilets`)) || [
   {
@@ -156,10 +272,20 @@ let newId = (toilets) => {
 let flag = true;
 // Mở modal khi click
 let openModal = (flag, index) => {
-  document.getElementById("modal").style.display = "block";
+  // Check permission before opening modal
   if (flag) {
+    // Adding new toilet
+    if (!checkPermission('thêm nhà vệ sinh')) {
+      return;
+    }
+    document.getElementById("modal").style.display = "block";
     document.getElementById(`lbl-title`).innerHTML = `➕ Thêm nhà vệ sinh`;
   } else {
+    // Editing existing toilet
+    if (!checkPermission('sửa nhà vệ sinh')) {
+      return;
+    }
+    document.getElementById("modal").style.display = "block";
     document.getElementById(`lbl-title`).innerHTML =
       `😶‍🌫️ Sửa thông tin ${toilets[index].name}`;
   }
@@ -240,26 +366,44 @@ let render = (toilets) => {
             <p class="text-gray-600 text-sm mt-3">${toilet.description}</p>
 
             <div class="flex gap-2 mt-5">
-              <button
-                class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${index})'
-              >
-                ✏️ Sửa
-              </button>
+              ${isLoggedIn ? `
+                <button
+                  class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${index})'
+                >
+                  ✏️ Sửa
+                </button>
 
-              <button
-                class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded"
-              >
-                🗑 Xóa
-              </button>
+                <button
+                  class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded" onclick='deleteToilet(${index})'
+                >
+                  🗑 Xóa
+                </button>
+              ` : `
+                <button
+                  class="bg-gray-400 text-white w-full py-2 rounded cursor-not-allowed" disabled title="Cần đăng nhập để sửa"
+                >
+                  ✏️ Sửa
+                </button>
+
+                <button
+                  class="bg-gray-400 text-white w-full py-2 rounded cursor-not-allowed" disabled title="Cần đăng nhập để xóa"
+                >
+                  🗑 Xóa
+                </button>
+              `}
             </div>
           </div>
         </div>`;
     toiletUI.appendChild(toiletHTML);
   });
 };
-render(toilets);
 let btnSave = document.getElementById(`btn-save`);
 let addToilet = () => {
+  // Check permission
+  if (!checkPermission('thêm nhà vệ sinh')) {
+    return;
+  }
+
   let name = document.getElementById(`input-name`).value;
   let address = document.getElementById(`input-address`).value;
   let priceUrination = +document.getElementById(`input-urination`).value;
@@ -361,21 +505,62 @@ let addToilet = () => {
             <p class="text-gray-600 text-sm mt-3">${toilet.description}</p>
 
             <div class="flex gap-2 mt-5">
-              <button
-                class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${toilets.length - 1})'
-              >
-                ✏️ Sửa
-              </button>
+              ${isLoggedIn ? `
+                <button
+                  class="bg-yellow-400 hover:bg-yellow-500 text-white w-full py-2 rounded" onclick='openModal(false,${toilets.length - 1})'
+                >
+                  ✏️ Sửa
+                </button>
 
-              <button
-                class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded"
-              >
-                🗑 Xóa
-              </button>
+                <button
+                  class="bg-red-500 hover:bg-red-600 text-white w-full py-2 rounded" onclick='deleteToilet(${toilets.length - 1})'
+                >
+                  🗑 Xóa
+                </button>
+              ` : `
+                <button
+                  class="bg-gray-400 text-white w-full py-2 rounded cursor-not-allowed" disabled title="Cần đăng nhập để sửa"
+                >
+                  ✏️ Sửa
+                </button>
+
+                <button
+                  class="bg-gray-400 text-white w-full py-2 rounded cursor-not-allowed" disabled title="Cần đăng nhập để xóa"
+                >
+                  🗑 Xóa
+                </button>
+              `}
             </div>
           </div>
         </div>`;
   toiletUI.appendChild(toiletHTML);
+};
+
+/**
+ * Delete a toilet record
+ * @param {number} index - Index of the toilet to delete
+ */
+let deleteToilet = (index) => {
+  // Check permission
+  if (!checkPermission('xóa nhà vệ sinh')) {
+    return;
+  }
+
+  const toilet = toilets[index];
+  const confirmDelete = confirm(`Bạn chắc chắn muốn xóa: "${toilet.name}"?`);
+  
+  if (confirmDelete) {
+    toilets.splice(index, 1);
+    localStorage.setItem("toilets", JSON.stringify(toilets));
+    
+    // Remove the card from DOM
+    const toiletElement = document.getElementById(`toilet-${toilet.id}`);
+    if (toiletElement) {
+      toiletElement.remove();
+    }
+    
+    alert(`Đã xóa thành công: ${toilet.name}`);
+  }
 };
 
 btnSave.addEventListener(`click`, addToilet);
